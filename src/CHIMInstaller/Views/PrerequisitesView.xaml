@@ -1,0 +1,28 @@
+<UserControl x:Class="CHIMInstaller.Views.PrerequisitesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+    <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <materialDesign:PackIcon Kind="Download" 
+                                   Width="64" Height="64" 
+                                   Foreground="{StaticResource PrimaryBrush}"
+                                   HorizontalAlignment="Center" 
+                                   Margin="0,0,0,16" />
+            
+            <TextBlock Text="Prerequisites" 
+                      Style="{StaticResource SectionHeaderStyle}"
+                      HorizontalAlignment="Center" 
+                      Margin="0,0,0,8" />
+            
+            <TextBlock Text="This screen will install required dependencies." 
+                      FontSize="14" 
+                      Foreground="{DynamicResource MaterialDesignBodyLight}"
+                      HorizontalAlignment="Center" 
+                      TextWrapping="Wrap" 
+                      MaxWidth="400" 
+                      TextAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl> 

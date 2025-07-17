@@ -1,0 +1,24 @@
+<Application x:Class="CHIMInstaller.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Material Design Themes - Temporarily disabled -->
+                <!-- <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Cyan" /> -->
+                
+                <!-- Custom Styles -->
+                <ResourceDictionary Source="Resources/Styles/InstallerStyles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <!-- Application-wide resources -->
+            <SolidColorBrush x:Key="PrimaryBrush" Color="#673AB7" />
+            <SolidColorBrush x:Key="SecondaryBrush" Color="#00BCD4" />
+            <SolidColorBrush x:Key="AccentBrush" Color="#FF5722" />
+            <SolidColorBrush x:Key="SuccessBrush" Color="#4CAF50" />
+            <SolidColorBrush x:Key="WarningBrush" Color="#FF9800" />
+            <SolidColorBrush x:Key="ErrorBrush" Color="#F44336" />
+            
+        </ResourceDictionary>
+    </Application.Resources>
+</Application> 

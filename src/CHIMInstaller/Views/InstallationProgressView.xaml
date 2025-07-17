@@ -1,0 +1,12 @@
+<UserControl x:Class="CHIMInstaller.Views.InstallationProgressView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <Grid Background="{DynamicResource MaterialDesignPaper}">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <materialDesign:PackIcon Kind="Cog" Width="64" Height="64" Foreground="{StaticResource PrimaryBrush}" HorizontalAlignment="Center" Margin="0,0,0,16" />
+            <TextBlock Text="Installing" Style="{StaticResource SectionHeaderStyle}" HorizontalAlignment="Center" Margin="0,0,0,8" />
+            <TextBlock Text="Installing CHIM AI..." FontSize="14" Foreground="{DynamicResource MaterialDesignBodyLight}" HorizontalAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</UserControl> 
