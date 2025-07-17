@@ -1,3 +1,4 @@
+using CHIMInstaller.Core.Extensions;
 using CHIMInstaller.Services;
 using CHIMInstaller.ViewModels;
 using CHIMInstaller.Views;
@@ -87,12 +88,10 @@ public partial class App : Application
         // Configuration
         services.AddSingleton(configuration);
 
-        // Core Services
-        services.AddSingleton<ISystemCheckService, SystemCheckService>();
-        services.AddSingleton<IDownloadService, DownloadService>();
-        services.AddSingleton<IExtractionService, ExtractionService>();
-        services.AddSingleton<IPrerequisiteService, PrerequisiteService>();
-        services.AddSingleton<IConfigurationService, ConfigurationService>();
+        // Core Services from CHIMInstaller.Core
+        services.AddCoreServices();
+        
+        // UI Services (local to WPF app)
         services.AddSingleton<INavigationService, NavigationService>();
 
         // ViewModels

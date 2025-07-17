@@ -1,28 +1,317 @@
 <UserControl x:Class="CHIMInstaller.Views.PrerequisitesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+             xmlns:viewmodels="clr-namespace:CHIMInstaller.ViewModels">
 
-    <Grid Background="{DynamicResource MaterialDesignPaper}">
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <materialDesign:PackIcon Kind="Download" 
-                                   Width="64" Height="64" 
-                                   Foreground="{StaticResource PrimaryBrush}"
-                                   HorizontalAlignment="Center" 
-                                   Margin="0,0,0,16" />
-            
-            <TextBlock Text="Prerequisites" 
-                      Style="{StaticResource SectionHeaderStyle}"
+    <UserControl.Resources>
+        <Style x:Key="PrerequisiteItemStyle" TargetType="Border">
+            <Setter Property="Background" Value="#3E3E42"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,4"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#5E5E62"/>
+        </Style>
+
+        <Style x:Key="PrerequisiteNameStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <Style x:Key="PrerequisiteDescriptionStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#B3B3B3"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="PrerequisiteMessageStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#9E9E9E"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
+
+        <Style x:Key="RestartPanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="#FF6B47"/>
+            <Setter Property="CornerRadius" Value="6"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="0,16"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#2E2E30" Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,20">
+            <TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <TextBlock Text="Install Prerequisites" 
+                      FontSize="24" 
+                      FontWeight="SemiBold"
+                      Foreground="White"
                       HorizontalAlignment="Center" 
-                      Margin="0,0,0,8" />
-            
-            <TextBlock Text="This screen will install required dependencies." 
+                      Margin="0,0,0,8"/>
+            <TextBlock Text="Installing required dependencies for CHIM AI" 
                       FontSize="14" 
-                      Foreground="{DynamicResource MaterialDesignBodyLight}"
+                      Foreground="#B3B3B3"
                       HorizontalAlignment="Center" 
+                      TextAlignment="Center" 
                       TextWrapping="Wrap" 
-                      MaxWidth="400" 
-                      TextAlignment="Center" />
+                      MaxWidth="500"/>
+        </StackPanel>
+
+        <!-- Status Message -->
+        <Border Grid.Row="1" Background="#673AB7" CornerRadius="6" Padding="16" Margin="0,0,0,16">
+            <TextBlock Text="{Binding StatusMessage}" 
+                      FontSize="14" 
+                      Foreground="White" 
+                      TextAlignment="Center" 
+                      TextWrapping="Wrap"/>
+        </Border>
+
+        <!-- Prerequisites List -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding PrerequisiteItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Style="{StaticResource PrerequisiteItemStyle}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Status Icon -->
+                                <TextBlock Grid.Column="0" 
+                                          VerticalAlignment="Center" 
+                                          Margin="0,0,12,0"
+                                          FontSize="16">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="Pending">
+                                                    <Setter Property="Text" Value="⏳"/>
+                                                    <Setter Property="Foreground" Value="#FFA726"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Installing">
+                                                    <Setter Property="Text" Value="🔄"/>
+                                                    <Setter Property="Foreground" Value="#42A5F5"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                    <Setter Property="Text" Value="✅"/>
+                                                    <Setter Property="Foreground" Value="#66BB6A"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                                    <Setter Property="Text" Value="❌"/>
+                                                    <Setter Property="Foreground" Value="#EF5350"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+
+                                <!-- Prerequisite Info -->
+                                <StackPanel Grid.Column="1">
+                                    <TextBlock Text="{Binding Name}" Style="{StaticResource PrerequisiteNameStyle}"/>
+                                    <TextBlock Text="{Binding Description}" Style="{StaticResource PrerequisiteDescriptionStyle}"/>
+                                    <TextBlock Text="{Binding Message}" Style="{StaticResource PrerequisiteMessageStyle}"/>
+                                                                         <TextBlock Text="{Binding ErrorDetails}" 
+                                               Foreground="#EF5350"
+                                               Margin="0,4,0,0">
+                                         <TextBlock.Style>
+                                             <Style TargetType="TextBlock" BasedOn="{StaticResource PrerequisiteMessageStyle}">
+                                                 <Setter Property="Visibility" Value="Collapsed"/>
+                                                 <Style.Triggers>
+                                                     <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                                         <Setter Property="Visibility" Value="Visible"/>
+                                                     </DataTrigger>
+                                                 </Style.Triggers>
+                                             </Style>
+                                         </TextBlock.Style>
+                                     </TextBlock>
+                                </StackPanel>
+
+                                <!-- Status Text -->
+                                <TextBlock Grid.Column="2" 
+                                          VerticalAlignment="Center"
+                                          FontSize="12" 
+                                          FontWeight="SemiBold">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Status}" Value="Pending">
+                                                    <Setter Property="Text" Value="PENDING"/>
+                                                    <Setter Property="Foreground" Value="#FFA726"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Installing">
+                                                    <Setter Property="Text" Value="INSTALLING"/>
+                                                    <Setter Property="Foreground" Value="#42A5F5"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Completed">
+                                                    <Setter Property="Text" Value="COMPLETED"/>
+                                                    <Setter Property="Foreground" Value="#66BB6A"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Status}" Value="Failed">
+                                                    <Setter Property="Text" Value="FAILED"/>
+                                                    <Setter Property="Foreground" Value="#EF5350"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Overall Progress -->
+        <StackPanel Grid.Row="3" Margin="0,16,0,0">
+            <ProgressBar Value="{Binding OverallProgress}" 
+                        Maximum="100" 
+                        Height="8" 
+                        Background="#3E3E42"
+                        Foreground="#673AB7">
+                <ProgressBar.Style>
+                    <Style TargetType="ProgressBar">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInstalling}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ProgressBar.Style>
+            </ProgressBar>
+            
+            <TextBlock Text="{Binding OverallProgress, StringFormat={}{0:F0}% Complete}" 
+                      FontSize="12" 
+                      Foreground="#B3B3B3" 
+                      HorizontalAlignment="Center" 
+                      Margin="0,4,0,0">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInstalling}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
+
+        <!-- Restart Required Panel -->
+        <Border Grid.Row="4">
+            <Border.Style>
+                <Style TargetType="Border" BasedOn="{StaticResource RestartPanelStyle}">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding RestartRequired}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+            
+            <StackPanel>
+                <TextBlock Text="🔄 System Restart Required" 
+                          FontSize="16" 
+                          FontWeight="SemiBold"
+                          Foreground="White" 
+                          HorizontalAlignment="Center" 
+                          Margin="0,0,0,8"/>
+                <TextBlock Text="Windows features have been enabled and require a system restart to take effect." 
+                          FontSize="14" 
+                          Foreground="White" 
+                          TextAlignment="Center" 
+                          TextWrapping="Wrap" 
+                          Margin="0,0,0,16"/>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="Restart Now" 
+                            Command="{Binding RestartNowCommand}"
+                            Style="{StaticResource PrimaryButtonStyle}" 
+                            Margin="0,0,12,0"/>
+                    <Button Content="Restart Later" 
+                            Command="{Binding RestartLaterCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}"/>
+                </StackPanel>
+            </StackPanel>
+        </Border>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <!-- Start Installation Button -->
+            <Button Content="🚀 Start Installation" 
+                    Command="{Binding StartInstallationCommand}"
+                    Margin="0,0,12,0">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                        <Setter Property="Visibility" Value="Visible"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInstalling}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding InstallationCompleted}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- Retry Button -->
+            <Button Content="🔄 Retry Installation" 
+                    Command="{Binding RetryInstallationCommand}"
+                    Margin="0,0,12,0">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding InstallationCompleted}" Value="True"/>
+                                    <Condition Binding="{Binding IsInstalling}" Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <!-- Continue Button -->
+            <Button Content="Continue" 
+                    Command="{Binding ContinueCommand}"
+                    IsEnabled="{Binding InstallationCompleted}">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding InstallationCompleted}" Value="True"/>
+                                    <Condition Binding="{Binding RestartRequired}" Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
         </StackPanel>
     </Grid>
 </UserControl> 
